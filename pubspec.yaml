@@ -1,6 +1,7 @@
 name: error_handler_with_result
 description: A starting point for Dart libraries or applications.
 version: 1.0.0
+repository: https://github.com/boginni/error_handler_with_result
 
 environment:
   sdk: ^3.9.0
