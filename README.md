@@ -1,39 +1,58 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Result
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages). 
+A lightweight, explicit **Result Pattern** for Dart and Flutter.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages). 
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+This package provides a type-safe way to handle successes and failures, replacing traditional `try-catch` flows with a more predictable, value-based approach.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+* ✅ **Explicit Checking:** Use `isSuccess` and `isFailure` for clear, readable logic.
+* ✅ **Safe Capturing:** Use `Result.capture` to automatically wrap `Future` or synchronous blocks.
+* ✅ **Failure Mapping:** Automatically converts caught exceptions into `Failure` objects.
+* ✅ **Simple API:** No complex functional programming boilerplate—just clean Dart.
 
-## Getting started
+## Installation
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+Add this to your `pubspec.yaml`:
+
+```yaml
+dependencies:
+  error_handler_with_result: ^1.0.0
+```
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
+### Handling Results
+The core philosophy of this package is to use explicit checks to handle your data.
 
 ```dart
-const like = 'sample';
+final result = await Result.capture<User>(() => api.fetchUser());
+
+if (result.isSuccess) {
+  // Access the success value safely
+  final user = result.success;
+  print('Loaded: ${user.name}');
+} else {
+  // Access the failure object
+  final failure = result.failure;
+  print('Error: ${failure.message}');
+}
 ```
 
-## Additional information
+### Creating Results
+You can manually wrap values or use the provided extension:
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+```dart
+// Using constructors
+final success = Result<int>.success(42);
+final failure = Result<int>.failure(ServerFailure());
+
+// Using the .toResult() extension
+final myResult = someObject.toResult<MyType>();
+```
+
+### How `capture` Works
+The `capture` method handles the `try-catch` boilerplate for you. If an error is thrown inside the function, it is caught and converted into a `Failure`:
+
+1. If the error is already a `Failure` type, it is returned directly.
+2. Otherwise, it is wrapped in an `UnknownFailure` along with the `StackTrace`.
